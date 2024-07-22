@@ -18,6 +18,7 @@
 local tracer = require("skywalking.tracer")
 local client = require("skywalking.client")
 local Span = require('skywalking.span')
+local skywalking_util = require "skywalking.util"
 
 local subsystem = ngx.config.subsystem
 
@@ -92,6 +93,17 @@ function SkyWalkingHandler:body_filter(config)
     end
 end
 
+function SkyWalkingHandler:rewrite(conf)
+  -- Check if the request header contains sw8 trace information
+  if ngx.var.http_sw8 and ngx.var.http_sw8 ~= "" then
+    local sw8Str = ngx.var.http_sw8
+    local sw8Item = skywalking_util.split(sw8Str, "-")
+    if #sw8Item >= 2 then
+      -- Add the trace ID to the request header
+      ngx.req.set_header("trace_id", ngx.decode_base64(sw8Item[2]))
+    end
+  end
+end
 
 function SkyWalkingHandler:log(config)
     tracer:prepareForReport()
