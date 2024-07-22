@@ -93,7 +93,7 @@ function SkyWalkingHandler:body_filter(config)
     end
 end
 
-function SkyWalkingHandler:rewrite(conf)
+function SkyWalkingHandler:rewrite(config)
   -- Check if the request header contains sw8 trace information
   if ngx.var.http_sw8 and ngx.var.http_sw8 ~= "" then
     local sw8Str = ngx.var.http_sw8
